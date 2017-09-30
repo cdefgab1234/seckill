@@ -12,6 +12,8 @@ import org.seckill.exception.SeckillCloseException;
 import org.seckill.exception.SeckillException;
 import org.seckill.service.SeckillService;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.util.Date;
@@ -21,12 +23,18 @@ import java.util.List;
 /**
  * Created by Administrator on 2017/9/26.
  */
+//@component spring中所有组件的注解，当不知道是dao还是service使用它是可以的
+//@controller @dao @service
+@Service
 public class SeckillServiceImpl implements SeckillService {
 
     private org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    //注入service依赖
+    @Autowired
     private SeckillDao seckillDao;
 
+    @Autowired
     private SuccessKilledDao successKilledDao;
 
     //md5盐值字符串用于混淆MD5
@@ -66,7 +74,7 @@ public class SeckillServiceImpl implements SeckillService {
 
     public SeckillExecution executeSeckill(long seckillId, long userPhone, String md5) throws SeckillException, RepeatSeckillException, SeckillCloseException {
 
-        if(md5 == null || md5.equals(getMd5(seckillId))){
+        if(md5 == null || !md5.equals(getMd5(seckillId))){
             throw new SeckillCloseException("seckill data rewrite");
         }
         //执行秒杀逻辑减库存+记录秒杀逻辑
