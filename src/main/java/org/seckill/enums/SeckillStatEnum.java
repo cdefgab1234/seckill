@@ -16,7 +16,7 @@ public enum  SeckillStatEnum {
 
     private String stateInfo;
 
-    private SeckillStatEnum(String stateInfo, int state) {
+    private SeckillStatEnum( int state,String stateInfo) {
         this.stateInfo = stateInfo;
         this.state = state;
     }
