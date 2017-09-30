@@ -14,6 +14,7 @@ import java.util.List;
  * 三个方面：方法定义粒度，参数（简单直接）,返回类型（return的类型一定要友好）
  * Created by Administrator on 2017/9/26.
  */
+
 public interface SeckillService {
 
     /**
