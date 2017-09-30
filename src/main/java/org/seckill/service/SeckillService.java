@@ -15,11 +15,14 @@ import java.util.List;
  * Created by Administrator on 2017/9/26.
  */
 public interface SeckillService {
+
     /**
      * 获取所有秒杀物品清单
      * @return
      */
     List<Seckill> getSeckillList();
+
+
     /**
      *查询单个秒杀记录
      * @param seckillId
