@@ -7,6 +7,11 @@
   <version>1.0-SNAPSHOT</version>
   <name>seckill Maven Webapp</name>
   <url>http://maven.apache.org</url>
+
+  <properties>
+    <springframework>3.2.5.RELEASE</springframework>
+  </properties>
+
   <dependencies>
     <dependency>
       <!--3.0的junit是使用编程的方式来进行测试，而junit4是使用注解的方式来运行junit-->
@@ -153,6 +158,7 @@
       <artifactId>protostuff-runtime</artifactId>
       <version>1.0.8</version>
     </dependency>
+
   </dependencies>
   <build>
     <finalName>seckill</finalName>
