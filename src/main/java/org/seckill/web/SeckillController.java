@@ -2,19 +2,22 @@ package org.seckill.web;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.seckill.dto.Exposer;
+import org.seckill.dto.SeckillExecution;
 import org.seckill.dto.SeckillReslt;
 import org.seckill.entity.Seckill;
+import org.seckill.enums.SeckillStatEnum;
+import org.seckill.exception.RepeatSeckillException;
+import org.seckill.exception.SeckillCloseException;
+import org.seckill.exception.SeckillException;
 import org.seckill.service.SeckillService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,8 +29,8 @@ public class SeckillController {
 
     private final org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private SeckillService seckillService
+    @Autowired//他妈的报了一天的错，忘了加分号
+    private SeckillService seckillService;
 
     @RequestMapping(value="/list",method = RequestMethod.GET)
     public String list(Model model){
@@ -64,14 +67,51 @@ public class SeckillController {
     @ResponseBody
     public SeckillReslt<Exposer> exposer(Long seckillId){
 
-        SeckillReslt<Exposer> reslt;
+        SeckillReslt<Exposer> result;
         try {
             Exposer exposer=seckillService.exportSeckillUrl(seckillId);
-            reslt = new SeckillReslt<Exposer>(true,exposer);
+            result = new SeckillReslt<Exposer>(true,exposer);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
-            reslt = new SeckillReslt<Exposer>(false,e.getMessage());
+            result = new SeckillReslt<Exposer>(false,e.getMessage());
         }
-        return reslt;
+        return result;
+    }
+
+
+    @RequestMapping(value = "/{seckillId}/{md5}/execution",
+                  method = RequestMethod.POST,
+                  produces = {"application/json,charset=UTF-8"})
+    @ResponseBody
+    public SeckillReslt<SeckillExecution> excute(@PathVariable("seckillId") Long seckillId,
+                                                 @PathVariable("md5") String md5,
+                                                 @CookieValue(value = "killPhone",required = false) Long phone){
+        if(phone==null){
+            return new SeckillReslt<SeckillExecution>(false,"未注册");
+        }
+        //上面@CookieValue的require为false表示没有该参数也可以，这个值是从cookie中获取的登陆参数，感觉比@requireParam更靠谱一点
+        SeckillReslt<SeckillExecution> reslt;
+        try {
+            SeckillExecution execution = seckillService.executeSeckill(seckillId,phone,md5);
+            return new SeckillReslt<SeckillExecution>(true,execution);
+        }catch (RepeatSeckillException e){
+            SeckillExecution execution = new SeckillExecution(seckillId, SeckillStatEnum.REPEAT_KILL);
+            return new SeckillReslt<SeckillExecution>(false,execution);
+        }catch (SeckillCloseException e){
+            SeckillExecution execution = new SeckillExecution(seckillId, SeckillStatEnum.END);
+            return new SeckillReslt<SeckillExecution>(false,execution);
+        }
+        catch (Exception e){
+            logger.error(e.getMessage(),e);
+            SeckillExecution execution = new SeckillExecution(seckillId, SeckillStatEnum.INNER_ERROR);
+            return new SeckillReslt<SeckillExecution>(false,execution);
+        }
+    }
+
+    //获取系统时间
+    @RequestMapping(value = "/time/now",method = RequestMethod.GET)
+    public SeckillReslt<Long> time(){
+        Date now = new Date();
+        return new SeckillReslt<Long>(true,now.getTime());
     }
 }
