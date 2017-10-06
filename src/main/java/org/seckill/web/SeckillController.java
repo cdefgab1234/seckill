@@ -93,7 +93,8 @@ public class SeckillController {
         //上面@CookieValue的require为false表示没有该参数也可以，这个值是从cookie中获取的登陆参数，感觉比@requireParam更靠谱一点
         SeckillResult<SeckillExecution> result;
         try {
-            SeckillExecution execution = seckillService.executeSeckill(seckillId,phone,md5);
+            //存储过程调用
+            SeckillExecution execution = seckillService.executeSeckillProcedure(seckillId,phone,md5);
             return new SeckillResult<SeckillExecution>(true,execution);
         }catch (RepeatSeckillException e){
             SeckillExecution execution = new SeckillExecution(seckillId, SeckillStatEnum.REPEAT_KILL);
@@ -116,4 +117,6 @@ public class SeckillController {
         Date now = new Date();
         return new SeckillResult<Long>(true,now.getTime());
     }
+
+
 }
