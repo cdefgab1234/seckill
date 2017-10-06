@@ -1,4 +1,4 @@
-# seckill
+﻿# seckill
 idea的一个SSM的小项目
 主要介绍了：
    1.spring+springMVC+Mybatis项目的整合
