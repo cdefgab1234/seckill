@@ -1,7 +1,7 @@
 ﻿# seckill
 idea的一个SSM的小项目<br/>
 主要介绍了：<br/>
-  &nbmp; 1.spring+springMVC+Mybatis项目的整合<br/>
+   1.spring+springMVC+Mybatis项目的整合<br/>
    2.redis的后端缓存优化<br/>
    3.前段代码的模块化<br/>
    4.事务的使用<br/>
